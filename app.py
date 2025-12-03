@@ -63,8 +63,14 @@ def load_realtime_data(force_refresh: bool = False) -> list[dict]:
                 st.session_state.db.save_weather_data(data)
                 st.session_state.weather_data = data
                 st.session_state.last_update = datetime.now()
+        except ValueError as e:
+            # API key not configured
+            st.error(f"⚠️ API Key 設定錯誤: {e}")
+            st.info("📝 請在 Streamlit Cloud 的 Settings → Secrets 中設定：\n```\nCWA_API_KEY = \"你的API金鑰\"\n```")
+            return []
         except Exception as e:
             st.error(f"❌ 無法取得資料: {e}")
+            logger.error(f"Error fetching data: {e}")
             try:
                 data = st.session_state.db.get_latest_data()
                 if data:
@@ -88,8 +94,13 @@ def load_forecast_data(force_refresh: bool = False) -> dict:
                 dates = get_forecast_dates(forecast)
                 if dates and not st.session_state.selected_time:
                     st.session_state.selected_time = dates[0]
+        except ValueError as e:
+            # API key not configured
+            st.error(f"⚠️ API Key 設定錯誤: {e}")
+            st.info("📝 請在 Streamlit Cloud 的 Settings → Secrets 中設定：\n```\nCWA_API_KEY = \"你的API金鑰\"\n```")
         except Exception as e:
             st.error(f"❌ 無法取得預報: {e}")
+            logger.error(f"Error fetching forecast: {e}")
     return st.session_state.forecast_data or {"dates": [], "by_date": {}}
 
 

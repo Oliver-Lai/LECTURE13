@@ -1,18 +1,24 @@
 """Weather data scraper for CWA OpenData API."""
 
 import logging
+import os
 import time
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 import requests
+import urllib3
 
 from .config import CWA_API_BASE_URL, get_cwa_api_key
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Disable SSL warnings for Streamlit Cloud
+# This is needed because some cloud environments have SSL cert issues
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # CWA API endpoints
 STATION_OBSERVATION_ENDPOINT = "O-A0003-001"  # 即時觀測
@@ -66,7 +72,10 @@ def fetch_weather_data(
     for attempt in range(max_retries):
         try:
             logger.info(f"Fetching weather data (attempt {attempt + 1}/{max_retries})")
-            response = requests.get(url, params=params, timeout=timeout)
+            # Use verify=False for Streamlit Cloud SSL issues
+            # Check if running in cloud environment
+            verify_ssl = not os.getenv('STREAMLIT_SHARING_MODE', False)
+            response = requests.get(url, params=params, timeout=timeout, verify=False)
             response.raise_for_status()
             
             data = response.json()
@@ -220,7 +229,8 @@ def fetch_weekly_forecast(
     for attempt in range(max_retries):
         try:
             logger.info(f"Fetching weekly forecast (attempt {attempt + 1}/{max_retries})")
-            response = requests.get(url, params=params, timeout=timeout)
+            # Use verify=False for Streamlit Cloud SSL issues
+            response = requests.get(url, params=params, timeout=timeout, verify=False)
             response.raise_for_status()
             data = response.json()
             

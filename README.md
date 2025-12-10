@@ -2,7 +2,7 @@
 
 台灣即時氣溫地圖與一週預報視覺化應用程式
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)]([https://share.streamlit.io](https://lecture13-keqensq2w6lbkckuzltrmc.streamlit.app/))
 
 ## 功能特色
 

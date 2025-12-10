@@ -497,14 +497,20 @@ def run_animation(forecast: dict, speed: float, dates: list[str]):
             cols[2].metric("最高", f"{stats['max_temp']}°C" if stats['max_temp'] else "N/A")
             cols[3].metric("最低", f"{stats['min_temp']}°C" if stats['min_temp'] else "N/A")
         
-        # Map
+        # Map with unique key for each frame
         with map_placeholder.container():
             m = create_folium_map(data)
-            st_folium(m, width=None, height=500, returned_objects=[])
+            st_folium(m, width=None, height=500, returned_objects=[], key=f"map_animation_{idx}")
         
         st.session_state.selected_time = current_time
         
         idx = (idx + 1) % len(dates)
+        
+        # Check if we've completed the loop
+        if idx == start_idx:
+            st.session_state.animation_running = False
+            break
+        
         time.sleep(speed)
     
     st.rerun()
